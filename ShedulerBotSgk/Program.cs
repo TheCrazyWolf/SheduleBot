@@ -14,18 +14,12 @@ internal class Program
     private static void Main(string[] args)
     {
         Welcome();
-        //AuthOnLoad();
         ServiceTask();
-
-
-
-
-        PropController s = new PropController();
 
         Console.ReadLine();
     }
 
-    private static async void ServiceTask()
+    private static void ServiceTask()
     {
         PropController s = new PropController();
         foreach (var item in s.GetSettingsList())
@@ -36,8 +30,8 @@ internal class Program
                 AccessToken = item.Token
             });
 
-            VkController v = new VkController();
-            Thread thread = new Thread(() => v.StartLongPoll(api, item));
+            VkController v = new VkController(api,item);
+            Thread thread = new Thread(() => v.ConnectLongPollServer());
             thread.Start();
         }
     }

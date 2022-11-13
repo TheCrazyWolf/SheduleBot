@@ -15,35 +15,44 @@ namespace ShedulerBotSgk.Controllers
     {
 
         private int _counterr = 0;
+        private Setting _settings;
+        private VkApi _api;
 
-        public void StartLongPoll(VkApi api, Setting d)
+
+        public VkController(VkApi api, Setting settings)
+        {
+            _api = api;
+            _settings = settings;
+        }
+
+        public void ConnectLongPollServer()
         {
             while (true)
             {
-                Write($"[Bot #{d.id}] Longpoll! ok");
+                Write($"[Bot #{_settings.id}] Longpoll! ok");
                 try
                 {
-                    var s = api.Groups.GetLongPollServer((ulong)d.IdGroup);
-                    var poll = api.Groups.GetBotsLongPollHistory(new BotsLongPollHistoryParams()
+                    var s = _api.Groups.GetLongPollServer((ulong)_settings.IdGroup);
+                    var poll = _api.Groups.GetBotsLongPollHistory(new BotsLongPollHistoryParams()
                     {
                         Server = s.Server,
                         Key = s.Key,
                         Ts = s.Ts,
                         Wait = 25
                     });
-                    Write($"[Bot #{d.id}] Longpoll! ok");
+                    Write($"[Bot #{_settings.id}] Longpoll! ok");
                     if (poll?.Updates == null) continue;
 
                 }
                 catch (Exception ex)
                 {
-                    WriteError($"[Bot #{d.id}] FAILED TO START UP SERVICE");
+                    WriteError($"[Bot #{_settings.id}] FAILED TO START UP SERVICE");
                     WriteError(ex.Message);
                     _counterr++;
 
                     if(_counterr > 5)
                     {
-                        WriteError($"[Bot #{d.id}] Отключен (превышено количество ошибок)");
+                        WriteError($"[Bot #{_settings.id}] Отключен (превышено количество ошибок)");
                         return;
                     }
                 }
@@ -51,7 +60,24 @@ namespace ShedulerBotSgk.Controllers
             }
         }
 
+        public void Send(string text, long? peerid)
+        {
+            Write($"[Message.Send] -> Беседа #{peerid}. Содержимое {text.Replace("\n", " ")}");
+            try
+            {
+                _api.Messages.Send(new MessagesSendParams()
+                {
 
+                    Message = text,
+                    PeerId = peerid,
+                    RandomId = new Random().Next()
+                });
+            }
+            catch (Exception ex)
+            {
+                WriteError(ex.ToString());
+            }
+        }
 
 
     }
