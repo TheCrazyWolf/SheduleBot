@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ShedulerBotSgk.CustomConsole;
 
 namespace ShedulerBotSgk.ModelDB
 {
@@ -20,6 +21,7 @@ namespace ShedulerBotSgk.ModelDB
 
         public DB()
         {
+            Write("Database.MigrateAsync()");
             Database.MigrateAsync();
         }
     }
