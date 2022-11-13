@@ -21,7 +21,7 @@ namespace ShedulerBotSgk.ModelDB
 
         public DB()
         {
-            Write("Database.MigrateAsync()");
+            Write("[DATABASE] Migrate async");
             Database.MigrateAsync();
         }
     }
