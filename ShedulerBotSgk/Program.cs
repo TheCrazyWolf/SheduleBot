@@ -6,41 +6,39 @@ using ShedulerBotSgk.ModelDB;
 using VkNet;
 using VkNet.Model;
 using VkNet.Enums.Filters;
+using System.IO;
+using Task = System.Threading.Tasks.Task;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
         Welcome();
+        //AuthOnLoad();
+        ServiceTask();
 
 
-        AuthOnLoad();
+
 
         PropController s = new PropController();
 
         Console.ReadLine();
     }
 
-    private static void AuthOnLoad()
+    private static async void ServiceTask()
     {
         PropController s = new PropController();
         foreach (var item in s.GetSettingsList())
         {
-            try
+            VkApi api = new VkApi();
+            api.Authorize(new ApiAuthParams()
             {
-                VkApi api = new VkApi();
-                api.Authorize(new ApiAuthParams()
-                {
-                    AccessToken = item.Token
-                });
-                Write($"[Bot #{item.id}] Auth success");
-            }
-            catch (Exception ex)
-            {
-                WriteError($"[Bot #{item.id}] Auth failed, see more in console");
-                WriteWaring(ex.Message);
-                WriteWaring(ex.StackTrace);
-            }
+                AccessToken = item.Token
+            });
+
+            VkController v = new VkController();
+            Thread thread = new Thread(() => v.StartLongPoll(api, item));
+            thread.Start();
         }
     }
 }
