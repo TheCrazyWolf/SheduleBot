@@ -1,4 +1,5 @@
-﻿using ShedulerBotSgk.ModelShedule;
+﻿using ShedulerBotSgk.ModelDB;
+using ShedulerBotSgk.ModelShedule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using VkNet;
 using static ShedulerBotSgk.CustomConsole;
 
 namespace ShedulerBotSgk.Controllers
@@ -29,6 +31,26 @@ namespace ShedulerBotSgk.Controllers
 
             ScheduleApi lessons = JsonSerializer.Deserialize<ScheduleApi>(json);
             return lessons;
+        }
+
+        public string GetLessonsString(ScheduleApi lessons, Setting _settings, VkApi _api, ModelDB.Task task)
+        {
+            string text = $"Расписание на {lessons.date}\n";
+
+            foreach (var item in lessons.lessons)
+            {
+                text += $"{item.num}. {item.nameGroup} {item.title} {item.cab}\n";
+            }
+
+            switch (App.Application.Debug)
+            {
+                case true:
+                    string sub = _settings.Token.Substring(6);
+                    text += $"Debug YES: [Bot #{_settings.id}] \nToken: {_settings.Token.Substring(6)}. \nTask #{task.IdTask}. \nValueShedule: {task.Value}";
+                    break;
+            }
+
+            return text;
         }
 
 
@@ -62,7 +84,7 @@ namespace ShedulerBotSgk.Controllers
             return null;
         }
 
-        public string Response(string url)
+        private string Response(string url)
         {
             try
             {

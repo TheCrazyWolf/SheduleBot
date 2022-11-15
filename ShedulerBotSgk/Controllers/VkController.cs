@@ -8,6 +8,7 @@ using VkNet.Model;
 using static ShedulerBotSgk.CustomConsole;
 using VkNet;
 using ShedulerBotSgk.ModelDB;
+using VkNet.Enums.Filters;
 
 namespace ShedulerBotSgk.Controllers
 {
@@ -23,6 +24,51 @@ namespace ShedulerBotSgk.Controllers
         {
             _api = api;
             _settings = settings;
+            Thread thread = new Thread(() => ServiceSchedule());
+            thread.Start();
+        }
+
+        private void ServiceSchedule()
+        {
+            while(true)
+            {
+                Thread.Sleep(_settings.Timer);
+
+                //if (DateTime.Now.Hour >= 22 || DateTime.Now.Hour <= 10)
+                //    continue;
+
+                if (_settings.Tasks == null)
+                    continue;
+                
+                foreach (var item in _settings.Tasks)
+                {
+                    Thread.Sleep(500);
+                    Write($"[Bot #{_settings.id}] Task #{item.IdTask} запущен по расписанию");
+
+
+                    SheduleController controller = new();
+                    var s = controller.GetLessons(DateTime.Now.AddDays(1), (char)item.TypeTask, Convert.ToInt32(item.Value));
+                    string rasp = controller.GetLessonsString(s, _settings, _api, item);
+
+                    if (item.ResultText == rasp)
+                        continue;
+
+                    if (s.lessons.Count == 0)
+                        continue;
+
+                    using (DB ef = new DB())
+                    {
+                        var temp = ef.Tasks.FirstOrDefault(x => x.IdTask == item.IdTask);
+                        if (temp != null)
+                            temp.ResultText = rasp;
+
+                        ef.SaveChanges();
+                    }
+
+                    Send(rasp, Convert.ToInt64(item.PeerId));
+
+                }
+            }
         }
 
         public void ConnectLongPollServer()

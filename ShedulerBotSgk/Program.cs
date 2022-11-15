@@ -16,6 +16,25 @@ internal class Program
         Welcome();
         ServiceTask();
 
+
+
+
+        //ShedulerBotSgk.ModelDB.Task task = new()
+        //{
+        //    TypeTask = 'T',
+        //    PeerId = 133156422,
+        //    Value = 1468.ToString()
+        //};
+        //using(DB ef = new DB())
+        //{
+        //    var search = ef.Settings.FirstOrDefault(x => x.id == 2);
+        //    if (search.Tasks == null)
+        //        search.Tasks = new List<ShedulerBotSgk.ModelDB.Task>();
+            
+        //    search.Tasks.Add(task);
+        //    ef.SaveChanges();
+        //}
+
         Console.ReadLine();
     }
 

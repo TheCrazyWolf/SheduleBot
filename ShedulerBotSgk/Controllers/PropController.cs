@@ -1,4 +1,5 @@
-﻿using ShedulerBotSgk.ModelDB;
+﻿using Microsoft.EntityFrameworkCore;
+using ShedulerBotSgk.ModelDB;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +22,7 @@ namespace ShedulerBotSgk.Controllers
         {
             using(DB ef = new DB())
             {
-                _settings = ef.Settings.ToList();
+                _settings = ef.Settings.Include(x => x.Tasks).ToList();
             }
         }
         public List<Setting> GetSettingsList()
