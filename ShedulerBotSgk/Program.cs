@@ -41,6 +41,8 @@ internal class Program
     private static void ServiceTask()
     {
         PropController s = new PropController();
+        
+        
         foreach (var item in s.GetSettingsList())
         {
             VkApi api = new VkApi();

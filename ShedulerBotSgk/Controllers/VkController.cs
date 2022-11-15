@@ -9,6 +9,9 @@ using static ShedulerBotSgk.CustomConsole;
 using VkNet;
 using ShedulerBotSgk.ModelDB;
 using VkNet.Enums.Filters;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ShedulerBotSgk.Controllers
 {
@@ -50,6 +53,8 @@ namespace ShedulerBotSgk.Controllers
                     var s = controller.GetLessons(DateTime.Now.AddDays(1), (char)item.TypeTask, Convert.ToInt32(item.Value));
                     string rasp = controller.GetLessonsString(s, _settings, _api, item);
 
+                    rasp = Debug(rasp, item);
+
                     if (item.ResultText == rasp)
                         continue;
 
@@ -61,8 +66,10 @@ namespace ShedulerBotSgk.Controllers
                         var temp = ef.Tasks.FirstOrDefault(x => x.IdTask == item.IdTask);
                         if (temp != null)
                             temp.ResultText = rasp;
-
+                        //ef.Update(temp);
                         ef.SaveChanges();
+
+                        _settings = ef.Settings.Include(x=> x.Tasks).FirstOrDefault(x=> x.id == _settings.id);
                     }
 
                     Send(rasp, Convert.ToInt64(item.PeerId));
@@ -125,6 +132,21 @@ namespace ShedulerBotSgk.Controllers
             }
         }
 
+        public string Debug(string text, ModelDB.Task task)
+        {
+            switch (App.Application.Debug)
+            {
+                case true:
+                    string sub = _settings.Token.Substring(6);
+                    text += $"\nDebug status: [App.Application.Debug]\nSheduleBot v{App.Application.Version}" +
+                        $"\nBot #{_settings.id}\nТoken: {_settings.Token.Substring(190)}. " +
+                        $"\nTask #{task.IdTask}. \nID SHEDULE: {task.Value}" +
+                        $"\nError Count: {_counterr}";
+                    break;
+            }
+
+            return text;
+        }
 
     }
 }

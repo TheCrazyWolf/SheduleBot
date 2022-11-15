@@ -9,7 +9,7 @@ namespace ShedulerBotSgk.App
     internal class Application
     {
         static public readonly double Version = 3.00;
-        static public bool Debug = false;
+        static public bool Debug = true;
         static public bool AIMode = false;
 
         public void Verify(string[] args)

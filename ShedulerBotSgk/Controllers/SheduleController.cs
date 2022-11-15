@@ -42,14 +42,6 @@ namespace ShedulerBotSgk.Controllers
                 text += $"{item.num}. {item.nameGroup} {item.title} {item.cab}\n";
             }
 
-            switch (App.Application.Debug)
-            {
-                case true:
-                    string sub = _settings.Token.Substring(6);
-                    text += $"Debug YES: [Bot #{_settings.id}] \nToken: {_settings.Token.Substring(6)}. \nTask #{task.IdTask}. \nValueShedule: {task.Value}";
-                    break;
-            }
-
             return text;
         }
 
