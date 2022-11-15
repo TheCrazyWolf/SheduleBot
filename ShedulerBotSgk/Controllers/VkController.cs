@@ -33,8 +33,12 @@ namespace ShedulerBotSgk.Controllers
 
         private void ServiceSchedule()
         {
-            while(true)
+
+            while (true)
             {
+                if (!WatchDog())
+                    break;
+
                 Thread.Sleep(_settings.Timer);
 
                 //if (DateTime.Now.Hour >= 22 || DateTime.Now.Hour <= 10)
@@ -82,6 +86,9 @@ namespace ShedulerBotSgk.Controllers
         {
             while (true)
             {
+                if (!WatchDog())
+                    break;
+
                 Write($"[Bot #{_settings.id}] Longpoll! ok");
                 try
                 {
@@ -102,12 +109,7 @@ namespace ShedulerBotSgk.Controllers
                     WriteError($"[Bot #{_settings.id}] FAILED TO START UP SERVICE");
                     WriteError(ex.Message);
                     _counterr++;
-
-                    if(_counterr > 5)
-                    {
-                        WriteError($"[Bot #{_settings.id}] Отключен (превышено количество ошибок)");
-                        return;
-                    }
+                    WatchDog();
                 }
 
             }
@@ -146,6 +148,18 @@ namespace ShedulerBotSgk.Controllers
             }
 
             return text;
+        }
+
+        private bool WatchDog()
+        {
+            if (_counterr > 5)
+            {
+                WriteError($"[Bot #{_settings.id}] WatchDog: Отключен (превышено количество ошибок)");
+                return false;
+            }
+
+
+            return true;
         }
 
     }
