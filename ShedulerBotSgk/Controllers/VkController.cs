@@ -33,7 +33,6 @@ namespace ShedulerBotSgk.Controllers
 
         private void ServiceSchedule()
         {
-
             while (true)
             {
                 if (!WatchDog())
@@ -70,10 +69,11 @@ namespace ShedulerBotSgk.Controllers
                         var temp = ef.Tasks.FirstOrDefault(x => x.IdTask == item.IdTask);
                         if (temp != null)
                             temp.ResultText = rasp;
-                        //ef.Update(temp);
                         ef.SaveChanges();
 
-                        _settings = ef.Settings.Include(x=> x.Tasks).FirstOrDefault(x=> x.id == _settings.id);
+                        var temp_settings = ef.Settings.Include(x=> x.Tasks).FirstOrDefault(x=> x.id == _settings.id);
+                        if (temp_settings != null)
+                            _settings = temp_settings;
                     }
 
                     Send(rasp, Convert.ToInt64(item.PeerId));
@@ -106,8 +106,7 @@ namespace ShedulerBotSgk.Controllers
                 }
                 catch (Exception ex)
                 {
-                    WriteError($"[Bot #{_settings.id}] FAILED TO START UP SERVICE");
-                    WriteError(ex.Message);
+                    WriteError($"[Bot #{_settings.id}] {ex.Message}");
                     _counterr++;
                     WatchDog();
                 }

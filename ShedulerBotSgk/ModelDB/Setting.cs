@@ -18,5 +18,10 @@ namespace ShedulerBotSgk.ModelDB
 
         public List<Task>? Tasks { get; set; }
 
+        public Setting()
+        {
+            Tasks = new List<Task>();
+        }
+
     }
 }
