@@ -12,6 +12,8 @@ using VkNet.Enums.Filters;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
+using VkNet.Enums.SafetyEnums;
 
 namespace ShedulerBotSgk.Controllers
 {
@@ -103,12 +105,113 @@ namespace ShedulerBotSgk.Controllers
                     Write($"[Bot #{_settings.id}] Longpoll! ok");
                     if (poll?.Updates == null) continue;
 
+
+                    CheckEvent(poll);
+
                 }
                 catch (Exception ex)
                 {
                     WriteError($"[Bot #{_settings.id}] {ex.Message}");
                     _counterr++;
                     WatchDog();
+                }
+
+            }
+        }
+
+        public void CheckEvent(BotsLongPollHistoryResponse response)
+        {
+            //Write($"{response.Updates.Count()} событие.");
+            foreach (var item in response.Updates)
+            {
+
+                if (item.Type == GroupUpdateType.MessageNew)
+                {
+                    switch (App.Application.Debug)
+                    {
+                        case true:
+                            Write($"[Bot #{_settings.id}] [Message.New] <- Беседа #{item.Message.PeerId}. Отправитель #{item.Message.FromId}. Содержимое: {item.Message.Text}");
+                            break;
+                    }
+
+                    var user_msg = new Regex("\\[.*\\][\\s,]*").Replace(item.Message.Text.ToLower(), "").Split(" ");
+
+                    CommandController controller = new ();
+
+                    switch (user_msg[0])
+                    {
+
+                        case "начать":
+                        case "старт":
+                            Send("Здравствуйте! Этот бот будет отправлять вам расписание в лс. О том как его настроить или подключить к беседе - !справка", item.Message.PeerId);
+                            break;
+                        case "!справка":
+                        case "справка":
+                        case "помощь":
+                        case "!помощь":
+                            Send("Информация по командам:\n\n" +
+                                "!привязать <ИС-22-01/Фио препода> - привязать беседу для расписания\n" +
+                                "!отвязать - отвязать беседу\n" +
+                                "!расписание <вчера/сегодня/завтра>- расписание на вчера, сегодня и на завтра\n" +
+                                "<=Словарь=>\n" +
+                                "!словарь <слово!ответ;ответ> - добавление слов в словарь> \n(Например !словарь как дела!отлично;класс;успешно)\n" +
+                                "!редсловарь <слово!ответ;ответ> - редактирование словаря\n" +
+                                "!слово <слово> - словарь ответов\n" +
+                                "\n<=Администрирование бота=>\n" +
+                                "!админ <значение ID vk> - назначить нового админа\n" +
+                                "!рассылка <значение> - рассылка текста по группам\n" +
+                                "!задачи - текущие задачи\n" +
+                                "!удалзадачи <значение>\n" +
+                                "!конфиг - перезагрузить конфигурацию", item.Message.PeerId);
+                            break;
+
+                        // Раписание
+                        case "!расписание":
+                            Send(controller.GetLessonsNow(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!привязать":
+                            Send(controller.FindAddNewTask(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!отвязать":
+                            Send(controller.DeleteTask(item, user_msg), item.Message.PeerId);
+                            break;
+
+                        //Админстрирование
+                        case "!админ":
+                            Send(controller.AddNewAdmin(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!рассылка":
+                            Send(controller.SendAllResponse(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!задачи":
+                            Send(controller.GetTasks(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!удалзадачи":
+                            Send(controller.DeleteTaskAdmin(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!конфиг":
+                            Send(controller.ReloadConfig(item, user_msg), item.Message.PeerId);
+                            break;
+
+                        //Развлекаловка
+                        case "!словарь":
+                            Send(controller.AddNewBook(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!редсловарь":
+                            Send(controller.EditBook(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!слово":
+                            Send(controller.CheckBook(item, user_msg), item.Message.PeerId);
+                            break;
+                        case "!весьсловарь":
+                            Send(controller.GetAllBook(item, user_msg), item.Message.PeerId);
+                            break;
+                        default:
+                            Send(controller.GetAnswer(item, user_msg), item.Message.PeerId);
+                            break;
+                    }
+
+
                 }
 
             }
