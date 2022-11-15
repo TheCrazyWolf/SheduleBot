@@ -8,6 +8,7 @@ using VkNet.Model;
 using VkNet.Enums.Filters;
 using System.IO;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.EntityFrameworkCore;
 
 internal class Program
 {
@@ -40,20 +41,20 @@ internal class Program
 
     private static void ServiceTask()
     {
-        PropController s = new PropController();
-        
-        
-        foreach (var item in s.GetSettingsList())
+        using (DB ef = new DB())
         {
-            VkApi api = new VkApi();
-            api.Authorize(new ApiAuthParams()
+            foreach (var item in ef.Settings.Include(x => x.Tasks).ToList())
             {
-                AccessToken = item.Token
-            });
+                VkApi api = new VkApi();
+                api.Authorize(new ApiAuthParams()
+                {
+                    AccessToken = item.Token
+                });
 
-            VkController v = new VkController(api,item);
-            Thread thread = new Thread(() => v.ConnectLongPollServer());
-            thread.Start();
+                VkController v = new VkController(api, item);
+                Thread thread = new Thread(() => v.ConnectLongPollServer());
+                thread.Start();
+            }
         }
     }
 }
