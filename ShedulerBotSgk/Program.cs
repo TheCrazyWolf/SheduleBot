@@ -17,7 +17,9 @@ internal class Program
     {
         Welcome();
 
-        LoadCache();
+
+        if (!IsLoadedCache())
+            return;
 
         ServiceTask();
 
@@ -62,37 +64,47 @@ internal class Program
         }
     }
 
-    private static void LoadCache()
+    private static bool IsLoadedCache()
     {
-        SheduleController s = new SheduleController();
-
-        var groups_actual = s.GetGroups();
-        var teachers_actual = s.GetTeachers();
-
-        //Удаление кеша И добавление
-
-        using(DB ef = new DB())
+        try
         {
-            foreach (var item in ef.CacheGroups)
-            {
-                ef.Remove(item);
-            }
+            SheduleController s = new SheduleController();
 
-            foreach (var item in ef.CacheTeachers)
-            {
-                ef.Remove(item);
-            }
+            var groups_actual = s.GetGroups();
+            var teachers_actual = s.GetTeachers();
 
-            foreach (var item in groups_actual)
-            {
-                ef.Add(item);
-            }
+            //Удаление кеша И добавление
 
-            foreach (var item in teachers_actual)
+            using (DB ef = new DB())
             {
-                ef.Add(item);
+                foreach (var item in ef.CacheGroups)
+                {
+                    ef.Remove(item);
+                }
+
+                foreach (var item in ef.CacheTeachers)
+                {
+                    ef.Remove(item);
+                }
+
+                foreach (var item in groups_actual)
+                {
+                    ef.Add(item);
+                }
+
+                foreach (var item in teachers_actual)
+                {
+                    ef.Add(item);
+                }
+                ef.SaveChanges();
+                return true;
             }
-            ef.SaveChanges();
+        }
+        catch (Exception ex )
+        {
+            WriteError("Ошибка в кеширование");
+            WriteWaring(ex.ToString());
+            return false;
         }
     }
 }
