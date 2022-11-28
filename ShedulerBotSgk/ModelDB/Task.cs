@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShedulerBotSgk.ModelDB
 {
-    internal class Task
+    public class Task
     {
 
         [Key]

@@ -51,15 +51,12 @@ internal class Program
         {
             foreach (var item in ef.Settings.Include(x => x.Tasks).ToList())
             {
-                VkApi api = new VkApi();
-                api.Authorize(new ApiAuthParams()
+                switch (item.TypeBot)
                 {
-                    AccessToken = item.Token
-                });
-
-                //VkController v = new VkController(api, item);
-                //Thread thread = new Thread(() => v.ConnectLongPollServer());
-                //thread.Start();
+                    case "T":
+                        TelegController tg = new TelegController(item.Token, item);
+                        break;
+                }
             }
         }
     }
@@ -77,24 +74,29 @@ internal class Program
 
             using (DB ef = new DB())
             {
+                
                 foreach (var item in ef.CacheGroups)
                 {
                     ef.Remove(item);
+                    WriteError($"[Cache] Элемент {item.name} удален");
+                }
+                foreach (var item in groups_actual)
+                {
+                    ef.Add(item);
+                    WriteWaring($"[Cache] Элемент {item.name} закеширован");
                 }
 
                 foreach (var item in ef.CacheTeachers)
                 {
                     ef.Remove(item);
+                    WriteError($"[Cache] Элемент {item.name} удален");
                 }
 
-                foreach (var item in groups_actual)
-                {
-                    ef.Add(item);
-                }
 
                 foreach (var item in teachers_actual)
                 {
                     ef.Add(item);
+                    WriteWaring($"[Cache] Элемент {item.name} закеширован");
                 }
                 ef.SaveChanges();
                 return true;
