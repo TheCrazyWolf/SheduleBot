@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShedulerBotSgk.ModelDB
 {
-    internal class CacheGroups
+    internal class CacheGroups 
     {
         public int? id { get; set; }
         public string? name { get; set; }

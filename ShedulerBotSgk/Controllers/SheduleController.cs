@@ -46,12 +46,12 @@ namespace ShedulerBotSgk.Controllers
         }
 
 
-        public List<GroupElementApi> GetGroups()
+        public List<CacheGroups> GetGroups()
         {
             var json = Response("https://mfc.samgk.ru/api/groups");
             try
             {
-                var groups = JsonSerializer.Deserialize<List<GroupElementApi>>(json);
+                var groups = JsonSerializer.Deserialize<List<CacheGroups>>(json);
                 return groups;
             }
             catch (Exception ex)
@@ -61,12 +61,12 @@ namespace ShedulerBotSgk.Controllers
             return null;
         }
 
-        public List<TeacherElementApi> GetTeachers()
+        public List<CacheTeachers> GetTeachers()
         {
             var json = Response("https://asu.samgk.ru/api/teachers");
             try
             {
-                var teachers = JsonSerializer.Deserialize<List<TeacherElementApi>>(json);
+                var teachers = JsonSerializer.Deserialize<List<CacheTeachers>>(json);
                 return teachers;
             }
             catch (Exception ex)

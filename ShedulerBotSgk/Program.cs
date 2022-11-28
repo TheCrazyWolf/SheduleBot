@@ -9,12 +9,16 @@ using VkNet.Enums.Filters;
 using System.IO;
 using Task = System.Threading.Tasks.Task;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
         Welcome();
+
+        LoadCache();
+
         ServiceTask();
 
 
@@ -55,6 +59,40 @@ internal class Program
                 //Thread thread = new Thread(() => v.ConnectLongPollServer());
                 //thread.Start();
             }
+        }
+    }
+
+    private static void LoadCache()
+    {
+        SheduleController s = new SheduleController();
+
+        var groups_actual = s.GetGroups();
+        var teachers_actual = s.GetTeachers();
+
+        //Удаление кеша И добавление
+
+        using(DB ef = new DB())
+        {
+            foreach (var item in ef.CacheGroups)
+            {
+                ef.Remove(item);
+            }
+
+            foreach (var item in ef.CacheTeachers)
+            {
+                ef.Remove(item);
+            }
+
+            foreach (var item in groups_actual)
+            {
+                ef.Add(item);
+            }
+
+            foreach (var item in teachers_actual)
+            {
+                ef.Add(item);
+            }
+            ef.SaveChanges();
         }
     }
 }
