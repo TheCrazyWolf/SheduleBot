@@ -21,26 +21,38 @@ namespace ShedulerBotSgk.Controllers
         {
             _setting = setting;
             _api = new BotClient(token);
-            Thread poll = new Thread(() => StartPolling());
-            poll.Start();
 
-            Thread shh = new Thread(() => Sheduler());
-            shh.Start();
+            try
+            {
+                StartPolling();
+                Thread poll = new Thread(() => StartPolling());
+                poll.Start();
+
+                Thread shh = new Thread(() => Sheduler());
+                shh.Start();
+
+                Write($"[Bot #{_setting.id}] Запущен");
+            }
+            catch (Exception ex)
+            {
+                _counterr = 99999;
+                WriteError($"[Bot #{_setting.id}] не смог запустится");
+                WriteError(ex.ToString());
+            }
         }
 
         private void Sheduler()
         {
-            if (WatchDog())
+            if (IsBotDead())
                 return;
-
-
         } 
+
         private void StartPolling()
         {
             var updates = _api.GetUpdates();
             while (true)
             {
-                if (WatchDog())
+                if (IsBotDead())
                     return;
 
                 try
@@ -83,16 +95,15 @@ namespace ShedulerBotSgk.Controllers
             }
         }
 
-
         // WatchDog
-        private bool WatchDog()
+        private bool IsBotDead()
         {
-            if (_counterr > 5)
+            if (_counterr >= 5)
             {
                 WriteError($"[Bot #{_setting.id}] WatchDog: Отключен (превышено количество ошибок)");
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
 
     }

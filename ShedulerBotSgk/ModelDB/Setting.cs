@@ -11,12 +11,14 @@ namespace ShedulerBotSgk.ModelDB
     {
         [Key]
         public int id { get; set; }
-        public long IdGroup { get; set; }
-        public string Token { get; set; }
-        public int Timer { get; set; }
-        public long AdminID { get; set; }
 
         public string TypeBot { get; set; }
+        public int Timer { get; set; }
+        public string Token { get; set; }
+
+        public long? IdGroup { get; set; }
+        public long? AdminID { get; set; }
+
         public List<Task>? Tasks { get; set; }
 
         public Setting()
