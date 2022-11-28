@@ -20,7 +20,8 @@ internal class Program
 
         if (!IsLoadedCache())
             return;
-        ServiceTask();
+        
+        StartUp();
 
         while (true)
         {
@@ -46,15 +47,15 @@ internal class Program
                 Write(ConsoleCommandController.GetBots());
                 break;
             case "reload":
-                System.Diagnostics.Process.Start("ShedulerBotSgk.exe");
-                Environment.Exit(-1);
+            case "reboot":
+                ConsoleCommandController.OnReload();
                 break;
 
         }
     }
 
 
-    private static void ServiceTask()
+    private static void StartUp()
     {
         using (DB ef = new DB())
         {
@@ -63,8 +64,11 @@ internal class Program
                 switch (item.TypeBot)
                 {
                     case "T":
-                        Thread thread = new Thread(() => new TelegController(item.Token, item));
-                        thread.Start();
+                        var tg = new TelegController(item.Token, item);
+                        break;
+
+                    default:
+                        WriteError($"[Bot #{item.id} не запущен");
                         break;
                 }
             }

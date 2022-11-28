@@ -79,5 +79,12 @@ namespace ShedulerBotSgk.Controllers
                 return ex.ToString();
             }
         }
+        public static void OnReload()
+        {
+            WriteWaring($"Перезапуск ботов");
+
+            System.Diagnostics.Process.Start("ShedulerBotSgk.exe");
+            Environment.Exit(-1);
+        }
     }
 }

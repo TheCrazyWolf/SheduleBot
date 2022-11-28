@@ -24,7 +24,6 @@ namespace ShedulerBotSgk.Controllers
 
             try
             {
-                StartPolling();
                 Thread poll = new Thread(() => StartPolling());
                 poll.Start();
 
@@ -36,7 +35,7 @@ namespace ShedulerBotSgk.Controllers
             catch (Exception ex)
             {
                 _counterr = 99999;
-                WriteError($"[Bot #{_setting.id}] не смог запустится");
+                WriteError($"[Bot #{_setting.id}] Не смог запустится");
                 WriteError(ex.ToString());
             }
         }
@@ -89,6 +88,10 @@ namespace ShedulerBotSgk.Controllers
             {
                 case "привет":
                     _api.SendMessage(update.Message.Chat.Id, "Хай");
+                    break;
+                case "!привязать":
+                    TaskController s = new TaskController();
+                    _api.SendMessage(update.Message.Chat.Id, s.AddTask(_setting.id,));
                     break;
                 default:
                     break;
