@@ -51,9 +51,9 @@ internal class Program
                     AccessToken = item.Token
                 });
 
-                VkController v = new VkController(api, item);
-                Thread thread = new Thread(() => v.ConnectLongPollServer());
-                thread.Start();
+                //VkController v = new VkController(api, item);
+                //Thread thread = new Thread(() => v.ConnectLongPollServer());
+                //thread.Start();
             }
         }
     }

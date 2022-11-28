@@ -16,6 +16,7 @@ namespace ShedulerBotSgk.ModelDB
         public int Timer { get; set; }
         public long AdminID { get; set; }
 
+        public string TypeBot { get; set; }
         public List<Task>? Tasks { get; set; }
 
         public Setting()

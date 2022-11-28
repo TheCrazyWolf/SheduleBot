@@ -12,6 +12,10 @@ namespace ShedulerBotSgk.ModelDB
     {
         public DbSet<Setting> Settings { get; set; }
         public DbSet<Task> Tasks { get; set; }
+
+        public DbSet<CacheGroups> CacheGroups { get; set; }
+        public DbSet<CacheTeachers> CacheTeachers { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);

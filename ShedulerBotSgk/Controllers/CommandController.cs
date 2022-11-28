@@ -9,9 +9,9 @@ namespace ShedulerBotSgk.Controllers
     internal class CommandController
     {
         
-        public string SetShedule()
-        {
+        //public string SetShedule()
+        //{
 
-        }
+        //}
     }
 }
