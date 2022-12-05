@@ -84,14 +84,17 @@ namespace ShedulerBotSgk.Controllers
 
             string[] msg = update.Message.Text.Split(' ');
 
+            TaskController s = new TaskController(_setting);
             switch (msg[0].ToLower())
             {
                 case "привет":
                     _api.SendMessage(update.Message.Chat.Id, "Хай");
                     break;
-                case "!привязать":
-                    TaskController s = new TaskController();
-                    _api.SendMessage(update.Message.Chat.Id, s.AddTask(_setting.id,));
+                case "/setup":
+                    _api.SendMessage(update.Message.Chat.Id, s.AddTask(_setting.id, update.Message.Chat.Id, msg[1]));
+                    break;
+                case "/delete":
+                    _api.SendMessage(update.Message.Chat.Id, s.DeleteTask(_setting.id, update.Message.Chat.Id));
                     break;
                 default:
                     break;
